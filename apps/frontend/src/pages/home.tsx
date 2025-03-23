@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useNavigate } from 'react-router-dom';
-import { useAuth,useClerk  } from '@clerk/clerk-react';
+import { useAuth } from '@clerk/clerk-react';
 import { useState } from "react";
 
 function FloatingPaths({ position }: { position: number }) {
