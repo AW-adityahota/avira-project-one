@@ -1,6 +1,5 @@
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
 import './App.css'
-import Home from "./pages/home";
 import Routing from "./route";
 import { BrowserRouter, Link } from "react-router-dom"; // Add Link import
 
