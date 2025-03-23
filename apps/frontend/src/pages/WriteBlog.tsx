@@ -2,8 +2,6 @@
 import { useState } from 'react';
 import { useAuth } from '@clerk/clerk-react';
 import axios from 'axios';
-import { ClerkProvider, useClerk } from '@clerk/clerk-react';
-
 
 export default function BlogEditor() {
   const URL = import.meta.env.VITE_URL; 
