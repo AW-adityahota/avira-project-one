@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: avira-frontend
+  labels:
+    app: avira-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: avira-frontend
+  template:
+    metadata:
+      labels:
+        app: avira-frontend
+    spec:
+      containers:
+        - name: avira-frontend
+          image: ogadityahota/avira-frontend:latest
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: avira-frontend-service
+spec:
+  selector:
+    app: avira-frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer  
+
