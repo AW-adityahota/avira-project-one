@@ -1,7 +1,7 @@
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
 import './App.css'
 import Routing from "./route";
-import { BrowserRouter, Link } from "react-router-dom"; // Add Link import
+import { BrowserRouter, Link } from "react-router-dom"; 
 
 function App() {
   return (

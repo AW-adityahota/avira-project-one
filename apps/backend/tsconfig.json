@@ -1,5 +1,4 @@
 {
-  "extends": "@repo/typescript-config/base.json && @repo/eslint-config/base.json",
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */
 

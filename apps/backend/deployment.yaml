@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: avira-backend
+  labels:
+    app: avira-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: avira-backend
+  template:
+    metadata:
+      labels:
+        app: avira-backend
+    spec:
+      containers:
+      - name: avira-backend
+        image: ogadityahota/avira-backend:latest
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "250m"
+            memory: "256Mi"

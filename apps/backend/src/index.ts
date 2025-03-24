@@ -9,15 +9,17 @@ import router from "./fileUpload";
 const app = express();
 const port = 3000;
 app.use(express.json());
-app.use(clerkMiddleware())
-dotenv.config();
+
 const prisma = new PrismaClient()
 app.use(cors({ 
     origin: "http://localhost:5173",
     credentials: true,
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST","OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]
   })); 
+  app.options('*', cors());
+  app.use(clerkMiddleware()); 
+  dotenv.config();
 
 app.get('/', (req, res) => {
     res.send('Hello World!')
@@ -73,23 +75,22 @@ app.post("/api/user/blog",requireAuth(),async(req,res)=>{
     }
 })
 
-app.get("/api/user/blogs/:blogid",async(req,res)=>{
+app.get("/api/blogs/:blogid",async(req,res)=>{
     try{
         const {blogid} =req.params; 
-        const blog = await prisma.blog.findUnique({
+        const uniqueblog = await prisma.blog.findUnique({
             where:{id:blogid},
         })
-        if(!blog){
+        if(!uniqueblog){
             res.status(404).json({msg :"blog not found"})
         }
+        res.json({uniqueblog}); 
     }
     catch(error){
         res.status(500).json({msg:"failed to get blog"})
     }
 })
 
-
 app.listen(port, () => {
-    console.log(`listening on port 3000`)
-})
-
+    console.log(`listening on port ${port}`);
+  });
