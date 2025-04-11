@@ -5,8 +5,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "type-check": "tsc --noEmit",
-    "dev": "esbuild src/index.ts --bundle --platform=node --external:pdf-parse --outfile=dist/index.js && node dist/index.js",
-    "build":"esbuild src/index.ts --bundle --platform=node --external:pdf-parse --outfile=dist/index.js"
+    "dev": "esbuild src/index.ts --bundle --platform=node --external:pdf-parse --external:swagger-ui-dist --outfile=dist/index.js && node dist/index.js",
+    "build": "esbuild src/index.ts --bundle --platform=node --external:pdf-parse --external:swagger-ui-dist --outfile=dist/index.js"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +15,7 @@
   "devDependencies": {
     "@types/multer": "^1.4.12",
     "@types/pdf-parse": "^1.1.4",
+    "@types/swagger-jsdoc": "^6.0.4",
     "@types/xlsx": "^0.0.35",
     "cross-env": "^7.0.3",
     "esbuild": "0.25.1",
@@ -27,6 +28,9 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
     "@types/jsonwebtoken": "^9.0.9",
+    "@types/redis": "^4.0.10",
+    "@types/swagger-ui-express": "^4.1.8",
+    "@types/ws": "^8.18.0",
     "cors": "^2.8.5",
     "docker": "^1.0.0",
     "dotenv": "^16.4.7",
@@ -37,6 +41,11 @@
     "next-auth": "^5.0.0-beta.25",
     "pdf-parse": "^1.1.1",
     "pdfjs-dist": "^5.0.375",
+    "redis": "^4.7.0",
+    "swagger-autogen": "^2.23.7",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "ws": "^8.18.1",
     "xlsx": "^0.18.5"
   }
 }

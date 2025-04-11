@@ -5,26 +5,139 @@ import { PrismaClient } from '@prisma/client'
 import { syncUser } from "./sync";
 import cors from "cors"
 import router from "./fileUpload";
+import WebSocket from "ws";
+import { WebSocketServer } from "ws";
+import http from "http"
+import {Notification} from "@prisma/client"
+
+import swaggerUi from 'swagger-ui-express';
+import { oas } from "./oas";
+ 
 
 const app = express();
 const port = 3000;
 app.use(express.json());
-
+const server = http.createServer(app);
+const wss = new WebSocketServer({ server });
 const prisma = new PrismaClient()
 app.use(cors({ 
     origin: ["http://localhost:5173","http://34.30.110.31"],
     credentials: true,
-    methods: ["GET", "POST","OPTIONS"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]
   })); 
   app.options('*', cors());
   app.use(clerkMiddleware()); 
   dotenv.config();
+  const userConnections = new Map<string, WebSocket>();
+
+
+
+  wss.on('connection', async (ws, req) => {
+    try {
+      const userId = req.url?.split('userId=')[1];
+      if (!userId) {
+        ws.close();
+        return;
+      }
+  
+      userConnections.set(userId, ws);
+      console.log(`User ${userId} connected`);
+  
+      ws.on('close', () => {
+        userConnections.delete(userId);
+        console.log(`User ${userId} disconnected`);
+      });
+  
+      ws.on('error', (error) => {
+        console.error(`WebSocket error for user ${userId}:`, error);
+      });
+    } catch (error) {
+        console.error('WebSocket connection error:', error);
+        ws.close();
+      }
+    });
+
+app.use('/documentation', swaggerUi.serve, swaggerUi.setup(oas));
+
+app.get('/api/user/notifications', requireAuth(), async (req, res) => {
+    try {
+      const prismaUser = await  syncUser(req);
+      const notifications = await prisma.notification.findMany({
+        where: { userId: prismaUser.id },
+        orderBy: { createdAt: 'asc' },
+        take: 20
+      });
+      res.json(notifications);
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+      res.status(500).json({ error: 'Failed to fetch notifications' });
+    }
+  });
+
+  app.patch('/api/user/notifications/:id/read', requireAuth(), async (req, res) => {
+    try {
+      const prismaUser = await syncUser(req);
+      const notification = await prisma.notification.update({
+        where: { id: req.params.id, userId: prismaUser.id },
+        data: { read: true }
+      });
+      res.json(notification);
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+      res.status(500).json({ error: 'Failed to update notification' });
+    }
+  });
+  
+  app.patch('/api/user/notifications/mark-all-read', requireAuth(), async (req, res) => {
+    try {
+      const prismaUser = await syncUser(req);
+      await prisma.notification.updateMany({
+        where: { 
+          userId: prismaUser.id,
+          read: false
+        },
+        data: { read: true }
+      });
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Error marking all as read:', error);
+      res.status(500).json({ error: 'Failed to update notifications' });
+    }
+  });
+
 
 app.get('/', (req, res) => {
-    res.send('Hello World!')
+    res.send('Hello World')
 })
 
+app.get('/health', async (req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    
+    res.status(200).json({
+      status: 'healthy',
+      services: {
+        database: true,
+      },
+      timestamp: new Date().toISOString()
+    });
+  } catch (error:any) {
+    res.status(500).json({
+      status: 'unhealthy',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+app.get('/ws-health', (req, res) => {
+  if (wss.clients.size > 0) {
+    res.status(200).json({ ws: 'healthy' });
+  } else {
+    res.status(200).json({ ws: 'no-connections' });
+  }
+});
 
 app.use("/api/user", router); 
 
@@ -43,6 +156,7 @@ app.get('/api/blogs',requireAuth(),async (req,res)=>{
             include: {  
                 author: true
             },
+            orderBy: { createdAt: 'asc' },
             skip: (pages-1)*limit,
             take:limit
         }); 
@@ -62,24 +176,41 @@ app.post("/api/user/blog",requireAuth(),async(req,res)=>{
         const blogs = await prisma.blog.create({
             data:{
                 title,
-                content,
+                content,    
                 authorId:prismaUser.id,
                 published: true 
             }
         })
-        res.json(blogs);
-    }
-    catch(error){
-        console.error("Blog creation error:", error); 
-  res.status(500).json({msg:"failed to post blog"})
-    }
-})
+        const notification = await prisma.notification.create({
+            data: {
+              message: `Your blog "${title}" was published successfully!`,
+              userId: prismaUser.id
+            }
+          });
+      
+          const userWs = userConnections.get(prismaUser.id);
+          if (userWs?.readyState === WebSocket.OPEN) {
+            userWs.send(JSON.stringify({
+              type: 'notification',
+              data: notification
+            }));
+          }
+      
+          res.json(blogs);
+        } catch (error) {
+          console.error("Blog creation error:", error);
+          res.status(500).json({ msg: "failed to post blog" });
+        }
+      });
 
 app.get("/api/blogs/:blogid",async(req,res)=>{
     try{
         const {blogid} =req.params; 
         const uniqueblog = await prisma.blog.findUnique({
             where:{id:blogid},
+            include: {  
+              author: true
+          }
         })
         if(!uniqueblog){
             res.status(404).json({msg :"blog not found"})
@@ -91,6 +222,6 @@ app.get("/api/blogs/:blogid",async(req,res)=>{
     }
 })
 
-app.listen(port, () => {
-    console.log(`listening on port ${port}`);
-  });
+server.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+});

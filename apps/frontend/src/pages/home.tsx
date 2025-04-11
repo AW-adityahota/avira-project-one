@@ -47,7 +47,7 @@ function FloatingPaths({ position }: { position: number }) {
 }
 
 export default function BackgroundPaths({
-  title = "Avira World",
+  title = "Ink Well",
 }: {
   title?: string;
 }) {
@@ -67,10 +67,20 @@ export default function BackgroundPaths({
     }
     
   };
+
+  const handleNavStartTwo = async()=>{
+    const token = await getToken();
+    if (!token) {
+      setMessage("Please Sign in");
+    } else {
+      navigate("/user/writeblog");
+    }
+    
+  }
   
   return (
+    
     <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-white">
-      
       <div className="absolute inset-0">
         <FloatingPaths position={1} />
         <FloatingPaths position={-1} />
@@ -111,30 +121,41 @@ export default function BackgroundPaths({
               </span>
             ))}
           </h1>
+          <div className="flex flex-col md:flex-row gap-4 justify-center">
+  {/* Start Reading Button */}
+  <motion.button
+    whileHover={{ y: -2 }}
+    whileTap={{ scale: 0.98 }}
+    className="relative px-8 py-4 text-lg font-semibold 
+      bg-white/95 hover:bg-white text-black 
+      rounded-xl shadow-md hover:shadow-lg 
+      border border-black/20 transition-all 
+      duration-300 flex items-center gap-2 group"
+    onClick={handleNavStart}
+  >
+    <span className="opacity-90 group-hover:opacity-100 transition-opacity">
+      Start Reading
+    </span>
+    →
+  </motion.button>
 
-          <div
-            className="inline-block group relative bg-gradient-to-b from-black/10 to-white/10 
-              p-px rounded-2xl backdrop-blur-lg overflow-hidden shadow-lg hover:shadow-xl 
-              transition-shadow duration-300"
-          >
-            <button
-              className="rounded-[1.15rem] px-8 py-6 text-lg font-semibold backdrop-blur-md 
-                bg-white/95 hover:bg-white/100 text-black transition-all duration-300 
-                group-hover:-translate-y-0.5 border border-black/10 hover:shadow-md"
-                onClick={handleNavStart}
-                
-            >
-              <span className="opacity-90 group-hover:opacity-100 transition-opacity">
-              Start Reading
-              </span>
-              <span
-                className="ml-3 opacity-70 group-hover:opacity-100 group-hover:translate-x-1.5 
-                  transition-all duration-300"
-              >
-                →
-              </span>
-            </button>
-          </div>
+  {/* Start Writing Button */}
+  <motion.button
+    whileHover={{ y: -2 }}
+    whileTap={{ scale: 0.98 }}
+    className="relative px-8 py-4 text-lg font-semibold 
+      bg-white/95 hover:bg-white text-black 
+      rounded-xl shadow-md hover:shadow-lg 
+      border border-black/20 transition-all 
+      duration-300 flex items-center gap-2 group"
+    onClick={handleNavStartTwo}
+  >
+    <span className="opacity-90 group-hover:opacity-100 transition-opacity">
+      Start Writing
+    </span>
+    <img className="h-6 w-5" src="https://img.icons8.com/ios/50/inscription.png" alt="inscription"/>
+  </motion.button>
+</div>
         </motion.div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-// AllBlogs.tsx
+
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
@@ -15,20 +15,20 @@ interface Blog {
 }
 
 export default function AllBlogs() {
-  const URL = import.meta.env.VITE_URL; 
-  
+  const URL = import.meta.env.VITE_URL;
+
   const { getToken } = useAuth();
   const [blogs, setBlogs] = useState<Blog[]>([]);
-  const [pages,setPages]=useState(1); 
-  const [totalPages, setTotalPages]  = useState(1); 
+  const [pages, setPages] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const fetchBlogs = async () => {
     try {
-      const token = await getToken(); 
+      const token = await getToken();
       const response = await axios.get(`${URL}/api/blogs?pages=${pages}`, {
         method: 'GET',
         headers: {
-          Authorization: `Bearer ${token}` 
+          Authorization: `Bearer ${token}`
         }
       })
       setTotalPages(response.data.totalPages);
@@ -45,7 +45,7 @@ export default function AllBlogs() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-20">
       <h1 className="text-4xl font-bold mb-8">Latest Blog Posts</h1>
-      
+
       <div className="space-y-8">
         {blogs.map(blog => (
 
@@ -68,23 +68,23 @@ export default function AllBlogs() {
         ))}
 
 
-            <div className="flex gap-4 mt-4">
-                <button 
-                    className="border px-3 py-1 rounded" 
-                    disabled={pages === 1} 
-                    onClick={() => setPages(pages - 1)}
-                >
-                    Prev
-                </button>
-                <span>Page {pages} of {totalPages}</span>
-                <button 
-                    className="border px-3 py-1 rounded" 
-                    disabled={pages === totalPages} 
-                    onClick={() => setPages(pages + 1)}
-                >
-                    Next
-                </button>
-            </div>
+        <div className="flex gap-4 mt-4  justify-center ">
+          <button
+            className="border px-3 py-1 rounded"
+            disabled={pages === 1}
+            onClick={() => setPages(pages - 1)}
+          >
+            Prev
+          </button>
+          <span>Page {pages} of {totalPages}</span>
+          <button
+            className="border px-3 py-1 rounded"
+            disabled={pages === totalPages}
+            onClick={() => setPages(pages + 1)}
+          >
+            Next
+          </button>
+        </div>
 
 
 
@@ -92,4 +92,3 @@ export default function AllBlogs() {
     </div>
   );
 }
-  
