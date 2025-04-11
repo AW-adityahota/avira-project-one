@@ -8,7 +8,9 @@ import router from "./fileUpload";
 import WebSocket from "ws";
 import { WebSocketServer } from "ws";
 import http from "http"
-import {Notification} from "@prisma/client"
+import Redis from 'redis';
+import nodemailer from 'nodemailer';
+import { createClient,RedisClientType  } from 'redis';
 
 import swaggerUi from 'swagger-ui-express';
 import { oas } from "./oas";
@@ -19,7 +21,8 @@ const port = 3000;
 app.use(express.json());
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
-const prisma = new PrismaClient()
+const prisma = new PrismaClient(); 
+const redisClient = createClient({ url: process.env.REDIS_URL }); //redis
 app.use(cors({ 
     origin: ["http://localhost:5173","http://34.30.110.31"],
     credentials: true,
@@ -29,8 +32,9 @@ app.use(cors({
   app.options('*', cors());
   app.use(clerkMiddleware()); 
   dotenv.config();
-  const userConnections = new Map<string, WebSocket>();
 
+  const userConnections = new Map<string, WebSocket>();
+  redisClient.connect().catch(console.error); //redis
 
 
   wss.on('connection', async (ws, req) => {
@@ -57,6 +61,46 @@ app.use(cors({
         ws.close();
       }
     });
+
+    const transporter = nodemailer.createTransport({
+      host: process.env.EMAIL_HOST,
+      port: Number(process.env.EMAIL_PORT),
+      secure: false, // true for 465
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+// Initialize Redis publisher and subscriber clients
+const redisPublisher: RedisClientType = createClient({ url: process.env.REDIS_URL });
+const redisSubscriber: RedisClientType = createClient({ url: process.env.REDIS_URL });
+
+// Connect Redis clients
+redisPublisher.connect().catch(console.error);
+redisSubscriber.connect().catch(console.error);
+
+// Subscribe to blog:created channel
+redisSubscriber.subscribe('blog:created', async (message: string) => {
+  try {
+    const { blogId, authorEmail } = JSON.parse(message);
+    
+    // Fetch blog details from DB (optional)
+    const blog = await prisma.blog.findUnique({ where: { id: blogId } });
+
+    // Send email
+    await transporter.sendMail({
+      from: '"Blog Platform" <noreply@example.com>',
+      to: authorEmail,
+      subject: "New Blog Published!",
+      html: `<p>Your blog "<b>${blog?.title}</b>" is now live!</p>`,
+    });
+
+    console.log(`Email sent to ${authorEmail}`);
+  } catch (error) {
+    console.error("Email sending failed:", error);
+  }
+});
 
 app.use('/documentation', swaggerUi.serve, swaggerUi.setup(oas));
 
@@ -112,24 +156,38 @@ app.get('/', (req, res) => {
 })
 
 app.get('/health', async (req, res) => {
+  const status = {
+    database: false,
+    redis: false,
+  };
+
   try {
+    //pg
     await prisma.$queryRaw`SELECT 1`;
-    
+    status.database = true;
+
+    //reddis
+    const ping = await redisClient.ping();
+    if (ping === 'PONG') {
+      status.redis = true;
+    }
+
     res.status(200).json({
       status: 'healthy',
-      services: {
-        database: true,
-      },
-      timestamp: new Date().toISOString()
+      services: status,
+      timestamp: new Date().toISOString(),
     });
-  } catch (error:any) {
+  } 
+  catch (error: any) {
     res.status(500).json({
       status: 'unhealthy',
+      services: status,
       error: error.message,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 });
+
 
 app.get('/ws-health', (req, res) => {
   if (wss.clients.size > 0) {
@@ -146,11 +204,18 @@ app.get('/api/user',requireAuth(),async (req,res)=>{
     res.json(prismaUser); 
 })
 
-app.get('/api/blogs',requireAuth(),async (req,res)=>{
+app.get('/api/blogs',requireAuth(),async (req,res): Promise<void> =>{
     try{
 
         const pages = Number(req.query.pages) ||1; 
         const limit = 3; 
+        const cacheKey = `blogs:${pages}`;
+
+        const cachedData = await redisClient.get(cacheKey);
+        if (cachedData) {
+            (res.json(JSON.parse(cachedData))); 
+            return; 
+        }
 
         const all = await prisma.blog.findMany({
             include: {  
@@ -162,6 +227,8 @@ app.get('/api/blogs',requireAuth(),async (req,res)=>{
         }); 
         const totalItems = await prisma.blog.count(); 
         res.json({totalItems,currentPage:pages,all,totalPages: Math.ceil(totalItems / limit)})
+
+        await redisClient.setEx(cacheKey, 600, JSON.stringify({totalItems,currentPage:pages,all,totalPages: Math.ceil(totalItems / limit)}));
     }
     catch(error){
         console.error("Error fetching blogs:", error);
@@ -181,6 +248,12 @@ app.post("/api/user/blog",requireAuth(),async(req,res)=>{
                 published: true 
             }
         })
+
+        await redisPublisher.publish('blog:created', JSON.stringify({
+          blogId: blogs.id,
+          authorEmail: prismaUser.email, 
+        }));
+        
         const notification = await prisma.notification.create({
             data: {
               message: `Your blog "${title}" was published successfully!`,

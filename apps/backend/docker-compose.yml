@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://neondb_owner:npg_mUFk71udNMpV@ep-morning-tree-a8ziurpx-pooler.eastus2.azure.neon.tech/avira?sslmode=require
+      - CLERK_PUBLISHABLE_KEY=pk_test_ZnVsbC1yYXktMTEuY2xlcmsuYWNjb3VudHMuZGV2JA
+      - CLERK_SECRET_KEY=sk_test_UDYoGcXevmXAe00tQXtGxJKjEd7vzukFlY4g2DtlmR
+      - REDIS_URL=redis://redis:6379
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_PORT=${EMAIL_PORT}
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6380:6379"  
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
