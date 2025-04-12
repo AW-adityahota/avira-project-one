@@ -5,6 +5,7 @@ metadata:
   labels:
     app: avira-backend
 spec:
+  # Adjust the replica count based on your production needs.
   replicas: 1
   selector:
     matchLabels:
@@ -15,14 +16,34 @@ spec:
         app: avira-backend
     spec:
       containers:
-      - name: avira-backend
-        image: ogadityahota/avira-backend:latest
-        ports:
-        - containerPort: 3000
-        resources:
-          requests:
-            cpu: "100m"
-            memory: "128Mi"
-          limits:
-            cpu: "250m"
-            memory: "256Mi"
+        - name: avira-backend
+          image: ogadityahota/avira-backend:latest
+          ports:
+            - containerPort: 3000
+          imagePullPolicy: Always
+          # Health checks to improve reliability and enable Kubernetes to restart problematic pods:
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 2
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 2
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+
+          env:
+            - name: REDIS_URL
+              value: "redis://redis:6379"

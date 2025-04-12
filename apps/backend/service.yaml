@@ -1,7 +1,9 @@
-apiVersion: v1
+apiVersion: v2
 kind: Service
 metadata:
   name: avira-backend-service
+  labels:
+    app: avira-backend
 spec:
   type: LoadBalancer
   selector:

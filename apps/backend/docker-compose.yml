@@ -6,14 +6,14 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - DATABASE_URL=postgresql://neondb_owner:npg_mUFk71udNMpV@ep-morning-tree-a8ziurpx-pooler.eastus2.azure.neon.tech/avira?sslmode=require
-      - CLERK_PUBLISHABLE_KEY=pk_test_ZnVsbC1yYXktMTEuY2xlcmsuYWNjb3VudHMuZGV2JA
-      - CLERK_SECRET_KEY=sk_test_UDYoGcXevmXAe00tQXtGxJKjEd7vzukFlY4g2DtlmR
-      - REDIS_URL=redis://redis:6379
-      - EMAIL_HOST=${EMAIL_HOST}
-      - EMAIL_PORT=${EMAIL_PORT}
-      - EMAIL_USER=${EMAIL_USER}
-      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - DATABASE_URL
+      - CLERK_PUBLISHABLE_KEY
+      - CLERK_SECRET_KEY
+      - REDIS_URL
+      - EMAIL_HOST
+      - EMAIL_PORT
+      - EMAIL_USER
+      - EMAIL_PASSWORD=
     depends_on:
       redis:
         condition: service_healthy
