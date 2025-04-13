@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: avira-backend-config
+data:
+  EMAIL_HOST: "smtp.gmail.com"
+  EMAIL_PORT: "587"
+  REDIS_URL: "redis://redis-service:6379"

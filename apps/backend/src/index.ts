@@ -22,7 +22,7 @@ app.use(express.json());
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 const prisma = new PrismaClient(); 
-const redisClient = createClient({ url: process.env.REDIS_URL }); //redis
+const redisClient = createClient({ url: process.env.REDIS_URL }); 
 app.use(cors({ 
     origin: ["http://localhost:5173","http://34.30.110.31"],
     credentials: true,
@@ -34,7 +34,7 @@ app.use(cors({
   dotenv.config();
 
   const userConnections = new Map<string, WebSocket>();
-  redisClient.connect().catch(console.error); //redis
+  redisClient.connect().catch(console.error); 
 
 
   wss.on('connection', async (ws, req) => {
@@ -72,23 +72,18 @@ app.use(cors({
       },
     });
 
-// Initialize Redis publisher and subscriber clients
 const redisPublisher: RedisClientType = createClient({ url: process.env.REDIS_URL });
 const redisSubscriber: RedisClientType = createClient({ url: process.env.REDIS_URL });
 
-// Connect Redis clients
 redisPublisher.connect().catch(console.error);
 redisSubscriber.connect().catch(console.error);
 
-// Subscribe to blog:created channel
 redisSubscriber.subscribe('blog:created', async (message: string) => {
   try {
     const { blogId, authorEmail } = JSON.parse(message);
-    
-    // Fetch blog details from DB (optional)
+
     const blog = await prisma.blog.findUnique({ where: { id: blogId } });
 
-    // Send email
     await transporter.sendMail({
       from: '"Blog Platform" <noreply@example.com>',
       to: authorEmail,
