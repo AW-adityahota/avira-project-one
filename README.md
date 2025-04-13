@@ -5,7 +5,7 @@ A full-stack blog platform with real-time notifications, authentication, and con
 
 ## Features
 
-- **User Authentication**: Secure authentication using Clerk
+- **User Authentication**: Secure authentication 
 - **Real-time Notifications**: WebSocket-based notifications for blog updates
 - **Blog Management**: Create, read, and manage blog posts
 - **File Uploads**: Support for document uploads with text extraction
