@@ -11,10 +11,8 @@ import http from "http"
 import Redis from 'redis';
 import nodemailer from 'nodemailer';
 import { createClient,RedisClientType  } from 'redis';
-
 import swaggerUi from 'swagger-ui-express';
 import { oas } from "./oas";
- 
 
 const app = express();
 const port = 3000;
@@ -23,12 +21,14 @@ const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 const prisma = new PrismaClient(); 
 const redisClient = createClient({ url: process.env.REDIS_URL }); 
+
 app.use(cors({ 
-    origin: ["http://localhost:5173","http://34.30.110.31"],
+    origin: ["34.46.68.183"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]
   })); 
+
   app.options('*', cors());
   app.use(clerkMiddleware()); 
   dotenv.config();
@@ -290,6 +290,6 @@ app.get("/api/blogs/:blogid",async(req,res)=>{
     }
 })
 
-server.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+server.listen(port, '0.0.0.0', () => {  
+  console.log(`Server running on port ${port}`);
 });
