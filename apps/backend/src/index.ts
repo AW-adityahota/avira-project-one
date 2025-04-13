@@ -22,14 +22,17 @@ const wss = new WebSocketServer({ server });
 const prisma = new PrismaClient(); 
 const redisClient = createClient({ url: process.env.REDIS_URL }); 
 
-app.use(cors({ 
-    origin: ["34.46.68.183"],
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+const corsOptions = {
+  origin: ["http://34.44.254.166"], 
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]
-  })); 
+};
 
-  app.options('*', cors());
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+
+
   app.use(clerkMiddleware()); 
   dotenv.config();
 

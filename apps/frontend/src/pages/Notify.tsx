@@ -58,9 +58,6 @@ export default function Notify() {
       }
     };
 
-    return () => {
-      socket.close();
-    };
   }, [userId]);
 
   const updateUnreadCount = (notifs: Notification[]) => {

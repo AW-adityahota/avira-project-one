@@ -24,19 +24,27 @@ spec:
               memory: "256Mi"
               cpu: "500m"
             requests:
-              memory: "128Mi"
+              memory: "128Mi" 
               cpu: "250m"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: avira-frontend-service
-spec:
-  selector:
-    app: avira-frontend
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
-  type: LoadBalancer  
-
+          securityContext:
+            runAsUser: 0
+            allowPrivilegeEscalation: false
+          # Mount the required volumes
+          volumeMounts:
+            - name: nginx-temp
+              mountPath: /var/cache/nginx
+            - name: nginx-run
+              mountPath: /var/run
+            - name: nginx-logs
+              mountPath: /var/log/nginx
+          # Add environment variables from ConfigMap
+          envFrom:
+            - configMapRef:
+                name: avira-frontend-config
+      volumes:
+        - name: nginx-temp
+          emptyDir: {}
+        - name: nginx-run
+          emptyDir: {}
+        - name: nginx-logs
+          emptyDir: {}
