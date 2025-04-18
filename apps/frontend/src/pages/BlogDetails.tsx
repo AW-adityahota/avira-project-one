@@ -5,6 +5,8 @@ import { useAuth } from '@clerk/clerk-react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import parse, { DOMNode, Element, Text } from 'html-react-parser';
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 
 interface Blog {
   id: string;
@@ -109,16 +111,8 @@ export default function BlogDetails() {
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-20 text-center">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-3/4 mx-auto"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/4 mx-auto"></div>
-          <div className="space-y-2">
-            <div className="h-4 bg-gray-200 rounded"></div>
-            <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-            <div className="h-4 bg-gray-200 rounded w-4/6"></div>
-          </div>
-        </div>
+      <div className="max-w-4xl mx-auto px-4 py-25 text-center">
+        <Skeleton count={5} />
       </div>
     );
   }
@@ -142,7 +136,7 @@ export default function BlogDetails() {
   if (!blog) return null;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-20">
+    <div className="max-w-4xl mx-auto px-4 py-21">
       <article className="prose lg:prose-xl max-w-none">
         <header className="mb-12">
           <Link 

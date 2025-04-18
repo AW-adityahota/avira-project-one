@@ -17,6 +17,7 @@ spec:
       containers:
         - name: avira-frontend
           image: ogadityahota/avira-frontend:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
           resources:

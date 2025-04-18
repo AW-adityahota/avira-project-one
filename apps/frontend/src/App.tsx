@@ -1,4 +1,4 @@
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
+import { SignedIn, SignedOut, SignInButton } from "@clerk/clerk-react";
 import './App.css'
 import Routing from "./route";
 import { BrowserRouter, Link } from "react-router-dom";
@@ -22,27 +22,24 @@ function App() {
               <SignInButton />
             </SignedOut>
             <SignedIn>
-              <UserButton />
+            <Link
+                  to="/profile"
+                  className=" py-2 m-1 text-sm font-medium text-gray-700 cursor-pointer"
+                >
+                  My Profile
+                </Link>
+                
               <Notify />
 
-              {/* <Link
-                to="/user/writeblog"
-                className=" m-1 ml-4 text-sm font-medium text-gray-700 cursor-pointer"
+              <a
+                href="https://www.buymeacoffee.com/adityahota"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hidden md:block py-2 m-1 text-sm font-medium text-gray-700 cursor-pointer"
               >
-                Write Blog
-              </Link>
-              <Link
-                to="/blogs"
-                className=" m-1 text-sm font-medium text-gray-700 cursor-pointer"
-              >
-                Explore Blogs
-              </Link> */}
-              <Link
-                to="/game"
-                className="py-2 m-1 text-sm font-medium text-gray-700 cursor-pointer"
-              >
-                Feeling Bored ?
-              </Link>
+                ☕ Buy me a coffee
+              </a>
+
             </SignedIn>
           </div>
         </nav>

@@ -6,8 +6,9 @@ import Documentation from "./pages/documentation";
 import BlogDetails from "./pages/BlogDetails";
 import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
-import LegalPage from "./pages/LegalPage";
 import SnowBored from "./game/components/SnowBored";
+import UserProfile from "./pages/UserProfile";
+
 export default function Routing() {
   return (
     <Routes>
@@ -18,8 +19,8 @@ export default function Routing() {
       <Route path="/blog/:blogid" element={<BlogDetails  />} />
       <Route path="/about" element={<AboutPage  />} />
       <Route path="/contact" element={<ContactPage  />} />
-      <Route path="/legal" element={<LegalPage  />} />
       <Route path="/game" element={<SnowBored  />} />
+      <Route path="/profile" element={<UserProfile  />} />
     </Routes>
   );
 }
