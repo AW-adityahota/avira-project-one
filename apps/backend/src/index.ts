@@ -26,9 +26,8 @@ const redisClient = createClient({
   url: process.env.REDIS_URL || 'redis://redis-service:6379'
 }); 
 
-// More permissive CORS configuration
 const corsOptions = {
-  origin: "*", // This allows requests from any origin
+  origin: "*", 
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]
@@ -37,7 +36,6 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 
-// Load environment variables early
 dotenv.config();
 
 app.use(clerkMiddleware()); 
@@ -47,7 +45,6 @@ const userConnections = new Map<string, WebSocket>();
 // Connect to Redis and handle connection errors
 redisClient.connect().catch(console.error); 
 
-// Debug route to check if the API is working
 app.get('/api/debug', (req, res) => {
   res.json({ status: 'ok', message: 'API is working' });
 });
@@ -165,7 +162,7 @@ app.patch('/api/user/notifications/mark-all-read', requireAuth(), async (req, re
   }
 });
 
-// User profile route - modified to be more robust
+// User profile route
 app.get('/api/user/profile', requireAuth(), async (req, res) => {
   try {
     console.log("Profile request received");
