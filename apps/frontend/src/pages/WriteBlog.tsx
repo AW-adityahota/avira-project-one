@@ -95,7 +95,7 @@ const WriteBlog = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-24">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-22 sm:py-22">
         {message && (
           <div className={`mb-6 p-3 sm:p-4 rounded-lg text-sm sm:text-base ${
             message.includes('success') 
@@ -106,7 +106,7 @@ const WriteBlog = () => {
           </div>
         )}
   
-        <input
+          <input
           type="text"
           placeholder="Blog Title"
           value={title}
@@ -181,7 +181,7 @@ const WriteBlog = () => {
                   className="px-3 py-2 text-xs sm:text-sm bg-black text-white rounded hover:bg-gray-800"
                 >
                   Insert
-                </button>
+                </button> 
               </div>
             </div>
           </div>
@@ -191,7 +191,7 @@ const WriteBlog = () => {
           placeholder="Write your story..."
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className="w-full text-lg sm:text-xl leading-relaxed font-serif text-gray-800 p-2 sm:p-3 resize-none"
+          className="w-full min-h-screen text-lg sm:text-xl leading-relaxed font-serif text-gray-800 p-2 sm:p-3 focus:outline-none placeholder-gray-400 resize-none"
           style={{ lineHeight: '1.8' }}
         />
   
