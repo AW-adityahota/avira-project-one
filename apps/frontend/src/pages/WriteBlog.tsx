@@ -95,7 +95,7 @@ const WriteBlog = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12 sm:py-30">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-24 sm:py-24">
         {message && (
           <div className={`mb-6 p-3 sm:p-4 rounded-lg text-sm sm:text-base ${
             message.includes('success') 
