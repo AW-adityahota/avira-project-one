@@ -34,6 +34,11 @@ export default function Footer() {
                                 >
                                     API Docs
                                 </Link>
+
+                                <li>
+
+                                </li>
+    
                             </li>
                         </ul>
                     </div>
@@ -71,14 +76,15 @@ export default function Footer() {
                         </ul>
                     </div>
 
-                    {/* Legal */}
                     <div className="space-y-4">
                         <h3 className="text-sm font-semibold text-gray-900">
-                        <Link
-                                    to="/legal"
-                                >
-                                    Legal
-                                </Link>
+                        <a
+                href="https://www.buymeacoffee.com/adityahota"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                ☕ Buy me a coffee
+              </a>
                         </h3>
                         
                     </div>

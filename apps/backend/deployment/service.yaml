@@ -1,7 +1,10 @@
-apiVersion: v2
+apiVersion: v1
 kind: Service
 metadata:
   name: avira-backend-service
+  annotations:
+    cloud.google.com/backend-config: '{"ports": {"80":"websocket-backendconfig"}}'
+    cloud.google.com/neg: '{"ingress": true}' 
   labels:
     app: avira-backend
 spec:

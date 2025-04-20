@@ -30,36 +30,6 @@ const WriteBlog = () => {
     }
   };
   
-  // const renderContentWithCode = (htmlContent: string) => {
-  //   const tempDiv = document.createElement('div');
-  //   tempDiv.innerHTML = htmlContent;
-    
-  //   tempDiv.querySelectorAll('pre.code-block').forEach((block) => {
-  //     // Get the language from the data attribute; default to 'javascript'
-  //     const language = block.getAttribute('data-language') || 'javascript';
-  //     const code = block.textContent;
-      
-  //     // Create a React root to render the SyntaxHighlighter into the pre element
-  //     const root = createRoot(block);
-  //     root.render(
-  //       <SyntaxHighlighter 
-  //         language={language} 
-  //         style={vscDarkPlus}
-  //         customStyle={{
-  //           borderRadius: '4px',
-  //           padding: '1rem',
-  //           margin: '1rem 0',
-  //           fontSize: '0.875rem'
-  //         }}
-  //       >
-  //         {code || ''}
-  //       </SyntaxHighlighter>
-  //     );
-  //   });
-    
-  //   return tempDiv.innerHTML;
-  // };
-  
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
@@ -125,49 +95,51 @@ const WriteBlog = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 py-20">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-24">
         {message && (
-          <div className={`mb-6 p-4 rounded-lg ${message.includes('success') 
-            ? 'bg-green-100 text-green-700' 
-            : 'bg-red-100 text-red-700'}`}>
+          <div className={`mb-6 p-3 sm:p-4 rounded-lg text-sm sm:text-base ${
+            message.includes('success') 
+              ? 'bg-green-100 text-green-700' 
+              : 'bg-red-100 text-red-700'
+          }`}>
             {message}
           </div>
         )}
-
+  
         <input
           type="text"
           placeholder="Blog Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full text-5xl font-serif font-bold mb-8 p-3 border-0 focus:ring-0 focus:outline-none placeholder-gray-400"
+          className="w-full text-3xl sm:text-5xl font-serif font-bold mb-6 sm:mb-8 p-2 sm:p-3 border-0 focus:ring-0 focus:outline-none placeholder-gray-400"
         />
-
-        <div className="sticky top-0 bg-white z-10 py-4 border-b">
-          <div className="flex items-center gap-4">
+  
+        <div className="sticky top-0 bg-white z-10 py-3 sm:py-4 border-b">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4">
             <button
               onClick={() => setShowCodeEditor(!showCodeEditor)}
-              className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded"
+              className="px-3 py-2 text-xs sm:text-sm bg-gray-100 hover:bg-gray-200 rounded"
             >
-              {showCodeEditor ? 'Hide Code Editor' : 'Add Code Block'}
+              {showCodeEditor ? 'Hide Code' : 'Add Code'}
             </button>
             <input
               type="file"
               onChange={handleFileChange}
-              className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:bg-gray-100 file:hover:bg-gray-200"
+              className="text-xs sm:text-sm file:mr-2 sm:file:mr-4 file:py-2 file:px-3 sm:file:px-4 file:rounded file:border-0 file:text-xs sm:file:text-sm file:bg-gray-100 file:hover:bg-gray-200 w-full sm:w-auto mt-2 sm:mt-0"
             />
             <button 
               onClick={handleUpload} 
-              className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded"
+              className="px-3 py-2 text-xs sm:text-sm bg-gray-100 hover:bg-gray-200 rounded mt-2 sm:mt-0"
             >
-              Upload File
+              Upload
             </button>
           </div>
         </div>
-
+  
         {showCodeEditor && (
-          <div className="my-6 border rounded-lg overflow-hidden">
+          <div className="my-4 sm:my-6 border rounded-lg overflow-hidden">
             <Editor
-              height="300px"
+              height="250px"
               defaultLanguage="javascript"
               theme="vs-dark"
               value={code}
@@ -180,54 +152,54 @@ const WriteBlog = () => {
                 scrollBeyondLastLine: false
               }}
             />
-            <div className="bg-gray-100 p-4 flex justify-end gap-4">
-              <button
-                onClick={() => setShowCodeEditor(false)}
-                className="px-4 py-2 text-sm hover:bg-gray-200 rounded"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={insertCodeBlock}
-                className="px-4 py-2 text-sm bg-black text-white rounded hover:bg-gray-800"
-              >
-                Insert Code
-              </button>
+            <div className="bg-gray-100 p-3 sm:p-4">
+              <div className="mb-3">
+                <label htmlFor="language-select" className="mr-2 text-sm">Language:</label>
+                <select
+                  id="language-select"
+                  value={selectedLanguage}
+                  onChange={(e) => setSelectedLanguage(e.target.value)}
+                  className="px-2 py-1 text-sm border rounded"
+                >
+                  <option value="javascript">JavaScript</option>
+                  <option value="python">Python</option>
+                  <option value="cpp">C++</option>
+                  <option value="typescript">TypeScript</option>
+                  <option value="java">Java</option>
+                  <option value="rust">Rust</option>
+                </select>
+              </div>
+              <div className="flex justify-end gap-2 sm:gap-4">
+                <button
+                  onClick={() => setShowCodeEditor(false)}
+                  className="px-3 py-2 text-xs sm:text-sm hover:bg-gray-200 rounded"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={insertCodeBlock}
+                  className="px-3 py-2 text-xs sm:text-sm bg-black text-white rounded hover:bg-gray-800"
+                >
+                  Insert
+                </button>
+              </div>
             </div>
-            <div className="mb-4">
-  <label htmlFor="language-select" className="mr-2">Select Language:</label>
-  <select
-    id="language-select"
-    value={selectedLanguage}
-    onChange={(e) => setSelectedLanguage(e.target.value)}
-    className="px-2 py-1 border rounded"
-  >
-    <option value="javascript">JavaScript</option>
-    <option value="python">Python</option>
-    <option value="cpp">C++</option>
-    <option value="typescript">TypeScript</option>
-    <option value="java">Java</option>
-    <option value="rust">Rust</option>
-  </select>
-</div>
-
           </div>
-
         )}
-
+  
         <textarea
           placeholder="Write your story..."
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className="w-full min-h-screen text-xl leading-relaxed font-serif text-gray-800 p-3 focus:outline-none placeholder-gray-400 resize-none"
+          className="w-full text-lg sm:text-xl leading-relaxed font-serif text-gray-800 p-2 sm:p-3 resize-none"
           style={{ lineHeight: '1.8' }}
         />
-
-        <div className="fixed bottom-8 right-8">
+  
+        <div className="fixed bottom-4 sm:bottom-8 right-4 sm:right-8">
           <button
             onClick={handlePublish}
             disabled={loading}
-            className="px-6 py-3 bg-black text-white rounded-full shadow-lg hover:bg-gray-800 transition-colors disabled:opacity-50"
+            className="px-4 sm:px-6 py-2 sm:py-3 bg-black text-white text-sm sm:text-base rounded-full shadow-lg hover:bg-gray-800 transition-colors disabled:opacity-50"
           >
             {loading ? 'Publishing...' : 'Publish'}
           </button>

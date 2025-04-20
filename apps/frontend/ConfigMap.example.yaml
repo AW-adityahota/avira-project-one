@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: avira-frontend-config
+data:
+  VITE_CLERK_PUBLISHABLE_KEY: "<your-clerk-publishable-key>"
+  VITE_URL: "<your-backend-api-url>"            
+  VITE_WS_URL: "<your-websocket-url>"           
+  
